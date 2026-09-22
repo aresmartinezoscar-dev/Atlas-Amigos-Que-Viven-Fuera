@@ -4,7 +4,7 @@
 
 // Cambia esto a "firebase" cuando hayas configurado tu proyecto de
 // Firebase (ver README.md, sección "Pasar a Firebase").
-export const STORAGE_MODE = "local"; // "local" | "firebase"
+export const STORAGE_MODE = "firebase"; // "local" | "firebase"
 
 // Solo se usa si STORAGE_MODE === "firebase".
 // Sustituye estos valores por los de tu propio proyecto de Firebase
