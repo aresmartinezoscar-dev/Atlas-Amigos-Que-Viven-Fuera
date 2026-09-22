@@ -1,0 +1,14 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Solo usuarios autenticados (incluido el inicio de sesión anónimo que
+    // usa esta app) pueden leer y escribir la colección "people".
+    // Es un punto de partida razonable para un MVP: evita que cualquiera
+    // en internet pueda escribir directamente contra tu base de datos sin
+    // pasar por la app. No sustituye una autenticación real de usuarios si
+    // en el futuro quieres separar los datos de cada persona que use la app.
+    match /people/{personId} {
+      allow read, write: if request.auth != null;
+    }
+  }
+}

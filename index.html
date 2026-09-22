@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Atlas de Gente</title>
+<meta name="description" content="Encuentra y organiza a la gente que quieres por el mundo.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css">
+
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<div class="app">
+
+  <div class="header">
+    <div class="titlebar">
+      <h1 class="display">Atlas de Gente</h1>
+      <span class="count" id="countLabel">— personas</span>
+    </div>
+    <div class="search-row">
+      <div class="search-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        <input type="text" id="searchInput" placeholder="Buscar por nombre o ciudad">
+      </div>
+      <button class="icon-btn" id="settingsBtn" aria-label="Ajustes">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06A1.65 1.65 0 005 15a1.65 1.65 0 00-1.51-1H3.4a2 2 0 010-4h.09A1.65 1.65 0 005 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06A1.65 1.65 0 009 4.6a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09c0 .69.4 1.31 1 1.51.63.24 1.35.12 1.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06A1.65 1.65 0 0019 9c.24.63.12 1.35.33 1.82"/></svg>
+      </button>
+    </div>
+    <div class="segmented">
+      <button id="tabMapBtn" class="active">Mapa</button>
+      <button id="tabListBtn">Lista</button>
+    </div>
+  </div>
+
+  <div class="views">
+    <div class="view active" id="viewMap">
+      <div id="leafletMap" class="leaflet-stage"></div>
+    </div>
+    <div class="view" id="viewList">
+      <div class="list-scroll" id="listScroll"></div>
+    </div>
+  </div>
+
+  <button class="fab" id="fabAdd" aria-label="Añadir persona">+</button>
+</div>
+
+<div class="scrim" id="scrim"></div>
+
+<div class="sheet" id="sheetDetail">
+  <div class="sheet-handle"></div>
+  <div class="sheet-head">
+    <h2 class="display">Detalle</h2>
+    <button class="sheet-close" data-close>×</button>
+  </div>
+  <div class="sheet-body" id="detailBody"></div>
+</div>
+
+<div class="sheet" id="sheetForm">
+  <div class="sheet-handle"></div>
+  <div class="sheet-head">
+    <h2 class="display" id="formTitle">Añadir persona</h2>
+    <button class="sheet-close" data-close>×</button>
+  </div>
+  <div class="sheet-body">
+    <button class="btn-outline" id="importContactBtn" style="display:none;width:100%;margin-bottom:14px;">📇 Importar desde contactos del teléfono</button>
+
+    <div class="photo-row">
+      <div class="photo-preview" id="photoPreview">Sin foto</div>
+      <div>
+        <input type="file" id="photoInput" accept="image/*">
+        <div style="font-size:12px;color:var(--ink-soft);margin-top:4px;">Opcional.</div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="nameInput">Nombre</label>
+      <input type="text" id="nameInput" placeholder="Nombre y apellido">
+    </div>
+
+    <div class="row2">
+      <div class="field">
+        <label for="countryInput">País</label>
+        <select id="countryInput">
+          <option value="España">España</option>
+          <option value="Reino Unido">Reino Unido</option>
+          <option value="México">México</option>
+          <option value="Argentina">Argentina</option>
+          <option value="Otro">Otro</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="cityInput">Ciudad</label>
+        <input type="text" id="cityInput" list="cityList" placeholder="Ej. Madrid">
+        <datalist id="cityList"></datalist>
+      </div>
+    </div>
+
+    <div class="field">
+      <div id="formMap" class="form-map"></div>
+      <div class="hint">Elige una ciudad o toca / arrastra el pin en el mapa para fijar el punto exacto.</div>
+    </div>
+
+    <div class="field">
+      <label for="phoneInput">Teléfono (con prefijo, ej. +34...)</label>
+      <input type="tel" id="phoneInput" placeholder="+34 600 000 000">
+    </div>
+
+    <div class="field">
+      <label for="noteInput">Nota (grupo, cómo os conocéis, etc.)</label>
+      <input type="text" id="noteInput" placeholder="Ej. Debate, universidad...">
+    </div>
+
+    <button class="btn-primary" id="saveBtn">Guardar</button>
+    <button class="btn-text" data-close>Cancelar</button>
+  </div>
+</div>
+
+<div class="sheet" id="sheetSettings">
+  <div class="sheet-handle"></div>
+  <div class="sheet-head">
+    <h2 class="display">Ajustes</h2>
+    <button class="sheet-close" data-close>×</button>
+  </div>
+  <div class="sheet-body">
+    <div class="settings-item">
+      <div>
+        <div class="lbl">Origen de datos</div>
+        <div class="desc" id="storageModeDesc">—</div>
+      </div>
+    </div>
+    <div class="settings-item">
+      <div>
+        <div class="lbl">Tema</div>
+        <div class="desc">Claro, oscuro o el del sistema</div>
+      </div>
+      <select id="themeSelect" style="padding:6px 10px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);">
+        <option value="system">Sistema</option>
+        <option value="light">Claro</option>
+        <option value="dark">Oscuro</option>
+      </select>
+    </div>
+    <div class="settings-item" style="flex-direction:column;align-items:stretch;gap:8px;">
+      <div>
+        <div class="lbl">Copia de seguridad</div>
+        <div class="desc">Exporta o importa tus datos en JSON.</div>
+      </div>
+      <button class="btn-outline" id="exportBtn">⬇️ Exportar datos (JSON)</button>
+      <label class="btn-outline" style="text-align:center;display:block;">
+        ⬆️ Importar datos (JSON)
+        <input type="file" id="importInput" accept=".json,application/json" style="display:none;">
+      </label>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
