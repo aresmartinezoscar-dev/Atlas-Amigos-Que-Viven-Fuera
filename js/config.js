@@ -10,12 +10,12 @@ export const STORAGE_MODE = "local"; // "local" | "firebase"
 // Sustituye estos valores por los de tu propio proyecto de Firebase
 // (Firebase Console > Configuración del proyecto > tus apps > SDK).
 export const firebaseConfig = {
-  apiKey: "TU_API_KEY",
-  authDomain: "TU_PROYECTO.firebaseapp.com",
-  projectId: "TU_PROYECTO",
-  storageBucket: "TU_PROYECTO.appspot.com",
-  messagingSenderId: "TU_SENDER_ID",
-  appId: "TU_APP_ID"
+  apiKey: "AIzaSyBf59y9Y6wawmtzMaSI9R2A7w5G_34yVLI",
+  authDomain: "atlas-amigos-viven-fuera.firebaseapp.com",
+  projectId: "atlas-amigos-viven-fuera",
+  storageBucket: "atlas-amigos-viven-fuera.firebasestorage.app",
+  messagingSenderId: "701080797522",
+  appId: "1:701080797522:web:e46aaedd0d678a419bfa8b"
 };
 
 // Proveedor de teselas (tiles) del mapa. Por defecto se usa CARTO
